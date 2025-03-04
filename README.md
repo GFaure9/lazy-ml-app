@@ -22,13 +22,22 @@ streamlit run lazyml.py
 
 ### Demo
 
-*Loading*
+*1) Loading*
+
 ![img1](images/img1.png)
-*Preprocessing*
+
+*2) Preprocessing*
+
 ![img2](images/img2.png)
-*Dataset*
+
+*3) Dataset*
+
 ![img3](images/img3.png)
-*Model*
+
+*4) Model*
+
 ![img4](images/img4.png)
-*Results*
+
+*5) Results*
+
 ![img5](images/img5.png)
