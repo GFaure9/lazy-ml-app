@@ -1,0 +1,5 @@
+streamlit==1.42.2
+PyYAML==6.0.2
+yaml-ml==1.0.0
+
+pandas==2.2.3  # temporary (will see if I can remove it)

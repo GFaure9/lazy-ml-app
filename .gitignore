@@ -1,0 +1,63 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment folders
+venv/
+env/
+.venv/
+.env/
+
+# Streamlit specific
+/.streamlit/
+
+# PyCharm project files
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings (if using VS Code)
+.vscode/
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store       # macOS
+Thumbs.db       # Windows
+
+# Coverage reports
+.coverage
+*.cover
+coverage.xml
+*.hypothesis/
+
+# pytest and unittest test results
+nosetests.xml
+test-results.xml
+coverage.xml
+
+# Flake8 config
+.flake8
+
+# MyPy
+.mypy_cache/
+
+# pytype
+.pytype/
+
+# IDE specific Python interpreter configuration (PyCharm)
+.idea/.idea
+
+# Dependency directories (use if applicable)
+Pipfile.lock
+poetry.lock
+*.egg-info/
+
+# Streamlit session state and temporary files
+*.streamlit/
+
+*.yaml
+/outputs/
