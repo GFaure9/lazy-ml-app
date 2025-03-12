@@ -15,7 +15,7 @@ pip install -r requirements
 ````
 
 > [!NOTE]
-> The app uses as core the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
+> This app is based on the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
 
 ### Usage
 
