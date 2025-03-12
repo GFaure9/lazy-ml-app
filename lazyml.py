@@ -7,13 +7,11 @@ import pandas as pd
 from yaml_ml import modules
 
 
-def generate_yaml(config, yaml_path):
-    """Generates a YAML file from a dictionary."""
+def generate_yaml(config: dict, yaml_path: str):
     with open(yaml_path, 'w') as file:
         yaml.dump(config, file, default_flow_style=False, sort_keys=False)
 
 def add_hyperparameter():
-    # Add a new hyperparameter to the session state
     if 'num_hyperparameters' not in st.session_state:
         st.session_state['num_hyperparameters'] = 0
     st.session_state['num_hyperparameters'] += 1
@@ -31,10 +29,10 @@ def convert_yes_no_to_bool(s: str) -> bool:
 
 
 def main():
-    st.title("LazyML")
+    st.markdown("<h1 style='color: #61CBF4;'>⌛ LazyML</h1>", unsafe_allow_html=True)
+    # st.image("logo.png", width=300)
     st.markdown("---")
 
-    # Drag and drop file input (only get name, folder, and extension)
     file_path = st.text_input("Paste your dataset file path here")
     if os.path.isfile(file_path):
         st.success(f"File detected: {file_path}")
@@ -47,7 +45,6 @@ def main():
         file_extension = Path(file_path).suffix.split(".")[-1]
         file_folder = os.path.dirname(file_path)
 
-        # Attempt to read column names without loading full file
         try:
             if file_extension in ["csv", "txt"]:
                 df = pd.read_csv(file_path, nrows=0)
@@ -55,8 +52,7 @@ def main():
         except Exception as e:
             st.error(f"Error reading columns: {e}")
 
-    # YAML Configuration
-    st.subheader("Loading Settings")
+    st.markdown("<h4 style='color: #61CBF4;'>⚙️ Loading</h4>", unsafe_allow_html=True)
 
     st.write(f"Detected folder : {file_folder}")
     st.write(f"Detected file name: {file_name}")
@@ -75,12 +71,12 @@ def main():
         "separator": separator,
     }
 
-    st.subheader("Target Variable")
+    st.markdown("<h4 style='color: #61CBF4;'>🎯 Target Variable</h4>", unsafe_allow_html=True)
     target_var = st.text_input("Name", key="target_var")
 
     preprocessing = {}
     if columns:
-        st.subheader("Preprocessing Settings")
+        st.subheader("Preprocessing")
         for col_name in columns:
             with st.container(border=True):
                 st.subheader(col_name)
@@ -114,19 +110,19 @@ def main():
             if encoding:
                 preprocessing[col_name]["encoding"] = encoding
 
-    st.subheader("Dataset Split Settings")
+    st.markdown("<h4 style='color: #61CBF4;'>✂️ Dataset</h4>", unsafe_allow_html=True)
     stratified_split = st.selectbox("Stratified Split?", ["yes", "no"], index=1)
     dataset = {
         "split": {
             "stratified": convert_yes_no_to_bool(stratified_split),
             "train": st.slider("Train Size (%)", 0, 100, 80),
-            "val": st.slider("Validation Size (%)", 0, 100, 0),
+            # "val": st.slider("Validation Size (%)", 0, 100, 0),
         }
     }
-    if dataset["split"]["val"] == 0:
-        del dataset["split"]["val"]
+    # if dataset["split"]["val"] == 0:
+    #     del dataset["split"]["val"]
 
-    st.subheader("Model Settings")
+    st.markdown("<h4 style='color: #61CBF4;'>🤖 Model</h4>", unsafe_allow_html=True)
     index = None
     if target_var in preprocessing.keys():
         if preprocessing[target_var]["type"] == "cont":
@@ -147,22 +143,29 @@ def main():
         st.button("Reset", on_click=reset_hyperparameters)
     if 'num_hyperparameters' in st.session_state:
         for i in range(st.session_state['num_hyperparameters']):
-            col_param_name, col_param_value = st.columns(2)
+            col_param_name, col_param_type, col_param_value = st.columns([1, 1, 2])
             with col_param_name:
                 param_name = st.text_input("Hyperparameter", key=f"hyperparam_name_{i}")
+            with col_param_type:
+                param_type = st.selectbox("Type", ['String', 'Float/Int', 'Boolean'], key=f"hyperparam_type_{i}")
             with col_param_value:
-                param_value = st.text_input("Value", key=f"hyperparam_value_{i}")
+                if param_type == 'String':
+                    param_value = st.text_input("Value", key=f"hyperparam_value_string_{i}")
+                elif param_type == 'Float/Int':
+                    param_value = st.number_input("Value", key=f"hyperparam_value_num_{i}")
+                elif param_type == 'Boolean':
+                    param_value = st.radio("Value", [True, False], key=f"hyperparam_value_bool_{i}")
             model[model_type][model_name][param_name] = param_value
     else:
         model = {model_type: {model_name: {}}}
 
-    st.subheader("Evaluation Metrics Settings")
+    st.markdown("<h4 style='color: #61CBF4;'>📏 Evaluation</h4>", unsafe_allow_html=True)
     scores = []
     if model_type:
         scores = modules["scores"][model_type]
     score = st.multiselect("Metrics", scores, key=f"score_{model_type}")
 
-    st.subheader("Outputs Settings")
+    st.markdown("<h4 style='color: #61CBF4;'>📤 Outputs</h4>", unsafe_allow_html=True)
     output_folder = st.text_input("Output Folder", "outputs/")
     model_name_save = st.text_input("Pipeline Name", "My_Pipeline")
     logs = st.selectbox("Save logs?", ["yes", "no"], index=1)
@@ -185,7 +188,6 @@ def main():
         generate_yaml(config, yaml_path)
         st.success(f"YAML file saved at: {yaml_path}")
 
-        # Run the pipeline
         command = f"python -m yaml_ml --cfg={yaml_path}"
         subprocess.run(command, shell=True, text=True)
 
@@ -194,3 +196,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # todo: add minimal comments to structure a bit the code
