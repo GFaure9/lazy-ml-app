@@ -1,7 +1,6 @@
 ![Logo](logo.png)
 
 A **Streamlit-based app** to define and run ML pipelines *quickly* and *effortlessly*.
-Uses core package [yaml-ML](https://github.com/GFaure9/yaml-ML).
 
 ---
 
@@ -14,6 +13,9 @@ git clone https://github.com/GFaure9/lazy-ml-app.git
 cd lazy-ml-app
 pip install -r requirements
 ````
+
+> [!NOTE]
+> The app uses as core the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
 
 ### Usage
 
