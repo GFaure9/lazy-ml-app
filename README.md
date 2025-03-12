@@ -3,6 +3,8 @@
 A **Streamlit-based app** to define and run ML pipelines *quickly* and *effortlessly*.
 Uses core package [yaml-ML](https://github.com/GFaure9/yaml-ML).
 
+---
+
 ### Installation
 
 ````commandline
