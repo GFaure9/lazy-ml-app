@@ -1,3 +1,5 @@
+from os import remove
+
 import streamlit as st
 import yaml
 import os
@@ -83,18 +85,27 @@ def main():
                 col_type = st.selectbox("Type", ["cont", "cat"], key=f"type_{col_name}")
                 cleaning = st.multiselect("Cleaning", ["remove_col", "remove_nans", "remove_outliers"],
                                           key=f"cleaning_{col_name}")
-                replace_nans = st.selectbox("NaN Replacements",
-                                            modules["preprocessing"][col_type]["replace_nans"], key=f"replace_{col_name}") if "remove_nans" not in cleaning else None
-                if replace_nans == "value":
-                    replace_nans_value = st.text_input("Value", "0" if col_type == "cont" else "", key="replace_nans_value")
-                    if col_type == "cont":
-                        replace_nans_value = float(replace_nans_value)
-                    replace_nans = {replace_nans: replace_nans_value}
-                scaling = st.selectbox("Scaling",
-                                       ["min_max", "abs_max", "standard", "robust"],
-                                       key=f"scaling_{col_name}", index=None) if col_type == "cont" else None
-                encoding = st.selectbox("Encoding", ["None", "binary", "one_hot", "ordinary"],
-                                        key=f"encoding_{col_name}", index=None) if col_type == "cat" else None
+                if "remove_col" in cleaning:
+                    replace_nans, scaling, encoding = None, None, None
+                else:
+                    replace_nans = st.selectbox("NaN Replacements",
+                                                modules["preprocessing"][col_type]["replace_nans"],
+                                                key=f"replace_{col_name}") if "remove_nans" not in cleaning else None
+                    if replace_nans == "value":
+                        replace_nans_value = st.text_input("Value", "0" if col_type == "cont" else "",
+                                                           key="replace_nans_value")
+                        if col_type == "cont":
+                            replace_nans_value = float(replace_nans_value)
+                        replace_nans = {replace_nans: replace_nans_value}
+
+                    scaling = st.selectbox("Scaling",
+                                           ["min_max", "abs_max", "standard", "robust"],
+                                           key=f"scaling_{col_name}",
+                                           index=None) if col_type == "cont" and "remove_col" not in cleaning else None
+
+                    encoding = st.selectbox("Encoding", ["None", "binary", "one_hot", "ordinary"],
+                                            key=f"encoding_{col_name}",
+                                            index=None) if col_type == "cat" and "remove_col" not in cleaning else None
 
             preprocessing[col_name] = {
                 "type": col_type,
@@ -196,4 +207,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # todo: display error if not valid target var name
+    # todo: change color + add logo as in readme
     # todo: add minimal comments to structure a bit the code
