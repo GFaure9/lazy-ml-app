@@ -1,12 +1,14 @@
-from os import remove
-
-import streamlit as st
 import yaml
 import os
-from pathlib import Path
+import sys
+import inspect
 import subprocess
+import streamlit as st
 import pandas as pd
+from pathlib import Path
 from yaml_ml import modules
+from yaml_ml.logger_cfg import logger, FORMAT
+from yaml_ml.model import PredictorConfig, Predictor
 
 
 def generate_yaml(config: dict, yaml_path: str):
@@ -31,8 +33,7 @@ def convert_yes_no_to_bool(s: str) -> bool:
 
 
 def main():
-    st.markdown("<h1 style='color: #61CBF4;'>⌛ LazyML</h1>", unsafe_allow_html=True)
-    # st.image("logo.png", width=300)
+    st.image("logo.png", width=550)
     st.markdown("---")
 
     file_path = st.text_input("Paste your dataset file path here")
@@ -54,7 +55,7 @@ def main():
         except Exception as e:
             st.error(f"Error reading columns: {e}")
 
-    st.markdown("<h4 style='color: #61CBF4;'>⚙️ Loading</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #4E95D9;'>⚙️ Loading</h4>", unsafe_allow_html=True)
 
     st.write(f"Detected folder : {file_folder}")
     st.write(f"Detected file name: {file_name}")
@@ -73,8 +74,8 @@ def main():
         "separator": separator,
     }
 
-    st.markdown("<h4 style='color: #61CBF4;'>🎯 Target Variable</h4>", unsafe_allow_html=True)
-    target_var = st.text_input("Name", key="target_var")
+    st.markdown("<h4 style='color: #4E95D9;'>🎯 Target Variable</h4>", unsafe_allow_html=True)
+    target_var = st.selectbox("Name", columns, key="target_var")
 
     preprocessing = {}
     if columns:
@@ -103,7 +104,7 @@ def main():
                                            key=f"scaling_{col_name}",
                                            index=None) if col_type == "cont" and "remove_col" not in cleaning else None
 
-                    encoding = st.selectbox("Encoding", ["None", "binary", "one_hot", "ordinary"],
+                    encoding = st.selectbox("Encoding", ["binary", "one_hot", "ordinary"],
                                             key=f"encoding_{col_name}",
                                             index=None) if col_type == "cat" and "remove_col" not in cleaning else None
 
@@ -121,7 +122,7 @@ def main():
             if encoding:
                 preprocessing[col_name]["encoding"] = encoding
 
-    st.markdown("<h4 style='color: #61CBF4;'>✂️ Dataset</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #4E95D9;'>✂️ Dataset</h4>", unsafe_allow_html=True)
     stratified_split = st.selectbox("Stratified Split?", ["yes", "no"], index=1)
     dataset = {
         "split": {
@@ -133,7 +134,7 @@ def main():
     # if dataset["split"]["val"] == 0:
     #     del dataset["split"]["val"]
 
-    st.markdown("<h4 style='color: #61CBF4;'>🤖 Model</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #4E95D9;'>🤖 Model</h4>", unsafe_allow_html=True)
     index = None
     if target_var in preprocessing.keys():
         if preprocessing[target_var]["type"] == "cont":
@@ -146,17 +147,27 @@ def main():
         model_names = modules["models"][model_type]
     model_name = st.selectbox("Model", model_names, key="model")
 
+    if model_type and model_name:
+        logger.remove()
+        predictor = Predictor(
+            PredictorConfig(prediction_type=model_type, model_name=model_name, h_params={})
+        )
+        predictor.initialize()
+        signature = inspect.signature(predictor.model.mdl.__init__)
+        hyperparams_dic = {name: param.annotation for name, param in signature.parameters.items() if name != "self"}
+        logger.add(sys.stdout, level="INFO", colorize=True, format=FORMAT)
+
     model = {model_type: {model_name: {}}}
     col_add, col_remove = st.columns(2)
     with col_add:
-        st.button("Add Hyperparameter", on_click=add_hyperparameter)
+        st.button("Add Hyperparameter", on_click=add_hyperparameter, disabled=model_name is None)
     with col_remove:
         st.button("Reset", on_click=reset_hyperparameters)
     if 'num_hyperparameters' in st.session_state:
         for i in range(st.session_state['num_hyperparameters']):
             col_param_name, col_param_type, col_param_value = st.columns([1, 1, 2])
             with col_param_name:
-                param_name = st.text_input("Hyperparameter", key=f"hyperparam_name_{i}")
+                param_name = st.selectbox("Hyperparameter", list(hyperparams_dic.keys()), key=f"hyperparam_name_{i}")
             with col_param_type:
                 param_type = st.selectbox("Type", ['String', 'Float/Int', 'Boolean'], key=f"hyperparam_type_{i}")
             with col_param_value:
@@ -164,19 +175,21 @@ def main():
                     param_value = st.text_input("Value", key=f"hyperparam_value_string_{i}")
                 elif param_type == 'Float/Int':
                     param_value = st.number_input("Value", key=f"hyperparam_value_num_{i}")
+                    if param_value.is_integer():
+                        param_value = int(param_value)
                 elif param_type == 'Boolean':
                     param_value = st.radio("Value", [True, False], key=f"hyperparam_value_bool_{i}")
             model[model_type][model_name][param_name] = param_value
     else:
         model = {model_type: {model_name: {}}}
 
-    st.markdown("<h4 style='color: #61CBF4;'>📏 Evaluation</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #4E95D9;'>📏 Evaluation</h4>", unsafe_allow_html=True)
     scores = []
     if model_type:
         scores = modules["scores"][model_type]
     score = st.multiselect("Metrics", scores, key=f"score_{model_type}")
 
-    st.markdown("<h4 style='color: #61CBF4;'>📤 Outputs</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #4E95D9;'>📤 Outputs</h4>", unsafe_allow_html=True)
     output_folder = st.text_input("Output Folder", "outputs/")
     model_name_save = st.text_input("Pipeline Name", "My_Pipeline")
     logs = st.selectbox("Save logs?", ["yes", "no"], index=1)
@@ -196,17 +209,21 @@ def main():
 
     if st.button("Generate Configuration File and Run Pipeline"):
         yaml_path = f"{model_name_save}.yaml"
-        generate_yaml(config, yaml_path)
-        st.success(f"YAML file saved at: {yaml_path}")
+        try:
+            generate_yaml(config, yaml_path)
+            st.success(f"YAML file saved at: {yaml_path}")
+        except Exception as e:
+            st.error(f"Error occurred when generating YAML config file: {e}")
 
         command = f"python -m yaml_ml --cfg={yaml_path}"
-        subprocess.run(command, shell=True, text=True)
-
-        st.success(f"Model trained and evaluated! See results at: {output_folder}/res/{model_name_save}__info.txt")
+        try:
+            subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
+            st.success(f"Model trained and evaluated! See results at: {output_folder}/res/{model_name_save}__info.txt")
+        except subprocess.CalledProcessError as e:
+            st.error(f"Error occurred while training the model: {e.stderr}")
 
 
 if __name__ == "__main__":
     main()
-    # todo: display error if not valid target var name
-    # todo: change color + add logo as in readme
+    # todo: see if possible to have the logs not for the 'predictor' but only when subprocess
     # todo: add minimal comments to structure a bit the code
