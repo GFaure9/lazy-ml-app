@@ -2,7 +2,7 @@
 
 ---
 
-A **Streamlit-based app** to define and run basic machine learning pipelines *quickly* and *effortlessly*.\
+A Streamlit-based app to **define and run basic machine learning pipelines** *quickly* and *effortlessly*.\
 From data preprocessing to model training and evaluation.
 
 ![AppScreenshot](resources/img_app.png)
