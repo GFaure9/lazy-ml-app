@@ -88,7 +88,7 @@ def main():
     if columns:
         # --------------- Define which preprocessing to apply to each variable
         st.subheader("Preprocessing")
-        st.markdown("[Link to available preprocessing options](https://gfaure9.github.io/yaml-ML/)", unsafe_allow_html=True)
+        st.markdown("[Link to available preprocessing options](https://gfaure9.github.io/yaml-ML/preprocessing.html)", unsafe_allow_html=True)
         for col_name in columns:
             with st.container(border=True):
                 st.subheader(col_name)
@@ -152,7 +152,7 @@ def main():
 
     # --------------- Select the Machine Learning model (regression? classification? which model?)
     st.markdown("<h4 style='color: #4E95D9;'>🤖 Model</h4>", unsafe_allow_html=True)
-    st.markdown("[Link to available models options](https://gfaure9.github.io/yaml-ML/)", unsafe_allow_html=True)
+    st.markdown("[Link to available models options](https://gfaure9.github.io/yaml-ML/models)", unsafe_allow_html=True)
     index = None
     if target_var in preprocessing.keys():
         if preprocessing[target_var]["type"] == "cont":
