@@ -7,7 +7,7 @@ from data preprocessing to model training and evaluation.
 
 ---
 
-### Installation
+### 1. Installation
 
 #### Without Docker
 
@@ -30,7 +30,7 @@ cd lazy-ml-app
 docker build -t lazy-ml-app .
 ```
 
-### Usage
+### 2. Usage
 
 #### Without Docker
 
