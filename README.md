@@ -7,6 +7,11 @@ from data preprocessing to model training and evaluation.
 
 ![AppScreenshot](resources/img_app.png)
 
+> [!NOTE]
+> This app is based on the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
+> To see what are the available options for preprocessing and model selection, please refer to the
+> [yaml-ML documentation](https://gfaure9.github.io/yaml-ML/).
+
 ### 1. Installation
 
 #### Without Docker
@@ -30,6 +35,8 @@ cd lazy-ml-app
 docker build -t lazy-ml-app .
 ```
 
+You can then check it appears in your Docker images by running `docker images`.
+
 ### 2. Usage
 
 #### Without Docker
@@ -45,10 +52,16 @@ Once you have built the Docker image, in a terminal from anywhere you can run th
 launch the app:
 
 ```commandline
-docker run -p 8501:8501 lazy-ml-app
+docker run --name lazy-ml-app -p 8501:8501 -v "PATH_TO_YOUR_DATA":/lazy_ml_app/data lazy-ml-app
 ```
 
-> [!NOTE]
-> This app is based on the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
-> To see what are the available options for preprocessing and model selection, please refer to the
-> [yaml-ML documentation](https://gfaure9.github.io/yaml-ML/).
+> [!WARNING]
+> Note that must change `PATH_TO_YOUR_DATA` to the absolute path to the dataset file on which you want
+> to run your ML pipelines, or the absolute path to the folder that contains the datasets files
+> you want to work on.
+> Then, inside the LazyML app, the path to your dataset will have to be **the one 
+> from the mounted folder**. For instance `/lazy_ml_app/data/your_dataset.csv`.
+
+**Remark**: to stop the container, run `docker stop lazy-ml-app`. To remove it,
+run `docker rm lazy-ml-app` or `docker rm YOUR_CONTAINER_ID`, where `YOUR_CONTAINER_ID` can
+be retrieved by looking at your containers list with the command `docker ps -a`.
