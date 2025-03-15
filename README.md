@@ -3,6 +3,8 @@
 A **Streamlit-based app** to define and run basic machine learning pipelines *quickly* and *effortlessly*,
 from data preprocessing to model training and evaluation.
 
+![AppScreenshot](resources/img_app.png)
+
 ---
 
 ### Installation
@@ -23,7 +25,9 @@ If you have already installed Docker on your machine, you can also install the a
 its image:
 
 ```commandline
-???
+git clone https://github.com/GFaure9/lazy-ml-app.git
+cd lazy-ml-app
+docker build -t lazy-ml-app .
 ```
 
 ### Usage
@@ -41,7 +45,7 @@ Once you have built the Docker image, in a terminal from anywhere you can run th
 launch the app:
 
 ```commandline
-???
+docker run -p 8501:8501 lazy-ml-app
 ```
 
 > [!NOTE]

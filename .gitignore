@@ -62,3 +62,5 @@ poetry.lock
 *.yaml
 /outputs/
 /logos/
+/resources/img_app1.png
+/resources/img_app2.png
