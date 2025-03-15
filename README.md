@@ -1,10 +1,13 @@
-![Logo](logo.png)
+![Logo](resources/logo.png)
 
-A **Streamlit-based app** to define and run ML pipelines *quickly* and *effortlessly*.
+A **Streamlit-based app** to define and run basic machine learning pipelines *quickly* and *effortlessly*,
+from data preprocessing to model training and evaluation.
 
 ---
 
 ### Installation
+
+#### Without Docker
 
 ````commandline
 conda create -n lazy_ml_env python=3.11
@@ -14,16 +17,34 @@ cd lazy-ml-app
 pip install -r requirements
 ````
 
-> [!NOTE]
-> This app is based on the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
+#### With Docker
+
+If you have already installed Docker on your machine, you can also install the app by building
+its image:
+
+```commandline
+???
+```
 
 ### Usage
+
+#### Without Docker
 
 ```commandline
 cd lazy-ml-app
 streamlit run lazyml.py
 ```
 
-### Demo
+#### With Docker
 
-Coming soon...
+Once you have built the Docker image, in a terminal from anywhere you can run the following command to
+launch the app:
+
+```commandline
+???
+```
+
+> [!NOTE]
+> This app is based on the package [yaml-ML](https://github.com/GFaure9/yaml-ML).
+> To see what are the available options for preprocessing and model selection, please refer to the
+> [yaml-ML documentation](https://gfaure9.github.io/yaml-ML/).

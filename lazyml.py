@@ -33,9 +33,11 @@ def convert_yes_no_to_bool(s: str) -> bool:
 
 
 def main():
-    st.image("logo.png", width=550)
+    # ---------------- Logo
+    st.image("resources/logo.png", width=550)
     st.markdown("---")
 
+    # --------------- Giving filepath
     file_path = st.text_input("Paste your dataset file path here")
     if os.path.isfile(file_path):
         st.success(f"File detected: {file_path}")
@@ -43,6 +45,7 @@ def main():
     file_name, file_extension, file_folder = "", "", ""
     columns = []
 
+    # if filepath is detected, retrieve name, externsion and folder + file columns names
     if file_path:
         file_name = Path(file_path).stem
         file_extension = Path(file_path).suffix.split(".")[-1]
@@ -55,12 +58,15 @@ def main():
         except Exception as e:
             st.error(f"Error reading columns: {e}")
 
+    # display the retrieved information about the file
     st.markdown("<h4 style='color: #4E95D9;'>⚙️ Loading</h4>", unsafe_allow_html=True)
 
     st.write(f"Detected folder : {file_folder}")
     st.write(f"Detected file name: {file_name}")
     st.write(f"Detected extension: {file_extension}")
 
+    # choose which separator is used between columns data in the file
+    # (to allow correct loading with yaml_ml)
     separator = st.selectbox("Column separator", [",", ";", ":", "<TAB>", "<SPACE>"])
     if separator == "<TAB>":
         separator = "\t"
@@ -74,20 +80,29 @@ def main():
         "separator": separator,
     }
 
+    # --------------- Selecting the target variable name among columns names
     st.markdown("<h4 style='color: #4E95D9;'>🎯 Target Variable</h4>", unsafe_allow_html=True)
     target_var = st.selectbox("Name", columns, key="target_var")
 
     preprocessing = {}
     if columns:
+        # --------------- Define which preprocessing to apply to each variable
         st.subheader("Preprocessing")
+        st.markdown("[Link to available preprocessing options](https://gfaure9.github.io/yaml-ML/)", unsafe_allow_html=True)
         for col_name in columns:
             with st.container(border=True):
                 st.subheader(col_name)
+                # declare variable type
                 col_type = st.selectbox("Type", ["cont", "cat"], key=f"type_{col_name}")
+
+                # select type of cleaning
                 cleaning = st.multiselect("Cleaning", ["remove_col", "remove_nans", "remove_outliers"],
                                           key=f"cleaning_{col_name}")
+
+                # if chose to remove column, set other prepro tasks to None
                 if "remove_col" in cleaning:
                     replace_nans, scaling, encoding = None, None, None
+                # else propose to select a method to replace NaN values, and scale or encode
                 else:
                     replace_nans = st.selectbox("NaN Replacements",
                                                 modules["preprocessing"][col_type]["replace_nans"],
@@ -122,6 +137,7 @@ def main():
             if encoding:
                 preprocessing[col_name]["encoding"] = encoding
 
+    # --------------- Defining how to split the dataset
     st.markdown("<h4 style='color: #4E95D9;'>✂️ Dataset</h4>", unsafe_allow_html=True)
     stratified_split = st.selectbox("Stratified Split?", ["yes", "no"], index=1)
     dataset = {
@@ -134,7 +150,9 @@ def main():
     # if dataset["split"]["val"] == 0:
     #     del dataset["split"]["val"]
 
+    # --------------- Select the Machine Learning model (regression? classification? which model?)
     st.markdown("<h4 style='color: #4E95D9;'>🤖 Model</h4>", unsafe_allow_html=True)
+    st.markdown("[Link to available models options](https://gfaure9.github.io/yaml-ML/)", unsafe_allow_html=True)
     index = None
     if target_var in preprocessing.keys():
         if preprocessing[target_var]["type"] == "cont":
@@ -157,6 +175,7 @@ def main():
         hyperparams_dic = {name: param.annotation for name, param in signature.parameters.items() if name != "self"}
         logger.add(sys.stdout, level="INFO", colorize=True, format=FORMAT)
 
+    # possibility (sometimes even mandatory) to set hyperparameters of the selected model
     model = {model_type: {model_name: {}}}
     col_add, col_remove = st.columns(2)
     with col_add:
@@ -183,18 +202,21 @@ def main():
     else:
         model = {model_type: {model_name: {}}}
 
+    # --------------- Select evaluation metrics to compute on the test dataset with your trained model
     st.markdown("<h4 style='color: #4E95D9;'>📏 Evaluation</h4>", unsafe_allow_html=True)
     scores = []
     if model_type:
         scores = modules["scores"][model_type]
     score = st.multiselect("Metrics", scores, key=f"score_{model_type}")
 
+    # --------------- Set the outputs information (folder, name, logs?)
     st.markdown("<h4 style='color: #4E95D9;'>📤 Outputs</h4>", unsafe_allow_html=True)
     output_folder = st.text_input("Output Folder", "outputs/")
     model_name_save = st.text_input("Pipeline Name", "My_Pipeline")
     logs = st.selectbox("Save logs?", ["yes", "no"], index=1)
     logs = convert_yes_no_to_bool(logs)
 
+    # --------------- Final configuration for yaml_ml
     config = {
         "logs": logs,
         "loading": loading,
@@ -207,6 +229,7 @@ def main():
         "name": model_name_save,
     }
 
+    # --------------- Running app button :-)
     if st.button("Generate Configuration File and Run Pipeline"):
         yaml_path = f"{model_name_save}.yaml"
         try:
@@ -226,4 +249,3 @@ def main():
 if __name__ == "__main__":
     main()
     # todo: see if possible to have the logs not for the 'predictor' but only when subprocess
-    # todo: add minimal comments to structure a bit the code
