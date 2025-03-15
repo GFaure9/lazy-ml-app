@@ -56,7 +56,7 @@ docker run --name lazy-ml-app -p 8501:8501 -v "PATH_TO_YOUR_DATA":/lazy_ml_app/d
 ```
 
 > [!WARNING]
-> Note that must change `PATH_TO_YOUR_DATA` to the absolute path to the dataset file on which you want
+> Note that you must change `PATH_TO_YOUR_DATA` to the absolute path to the dataset file on which you want
 > to run your ML pipelines, or the absolute path to the folder that contains the datasets files
 > you want to work on.
 > Then, inside the LazyML app, the path to your dataset will have to be **the one 
