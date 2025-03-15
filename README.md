@@ -56,11 +56,14 @@ docker run --name lazy-ml-app -p 8501:8501 -v "PATH_TO_YOUR_DATA":/lazy_ml_app/d
 ```
 
 > [!WARNING]
-> Note that you must change `PATH_TO_YOUR_DATA` to the absolute path to the dataset file on which you want
-> to run your ML pipelines, or the absolute path to the folder that contains the datasets files
-> you want to work on.
+> Note that you must change `PATH_TO_YOUR_DATA` to the absolute path to the folder
+> that contains the datasets files you want to work on.
+> 
 > Then, inside the LazyML app, the path to your dataset will have to be **the one 
 > from the mounted folder**. For instance `/lazy_ml_app/data/your_dataset.csv`.
+> 
+> Similarly, the output folder path should be something like `/lazy_ml_app/data/outputs` 
+> so that results be written to `PATH_TO_YOUR_DATA/outputs` on your machine.
 
 **Remark**: to stop the container, run `docker stop lazy-ml-app`. To remove it,
 run `docker rm lazy-ml-app` or `docker rm YOUR_CONTAINER_ID`, where `YOUR_CONTAINER_ID` can
