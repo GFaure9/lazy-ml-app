@@ -24,7 +24,7 @@ cd lazy-ml-app
 pip install -r requirements.txt
 ````
 
-#### *With Docker*
+#### *With Docker* (recommended)
 
 If you have already installed Docker on your machine, you can also install the app by building
 its image:
@@ -46,7 +46,7 @@ cd lazy-ml-app
 streamlit run lazyml.py
 ```
 
-#### *With Docker*
+#### *With Docker* (recommended)
 
 Once you have built the Docker image, in a terminal from anywhere you can run the following command to
 launch the app:
