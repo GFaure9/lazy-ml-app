@@ -21,7 +21,7 @@ conda create -n lazy_ml_env python=3.11
 conda activate lazy_ml_env
 git clone https://github.com/GFaure9/lazy-ml-app.git
 cd lazy-ml-app
-pip install -r requirements
+pip install -r requirements.txt
 ````
 
 #### *With Docker*
