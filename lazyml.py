@@ -234,7 +234,7 @@ def main():
         yaml_path = f"{model_name_save}.yaml"
         try:
             generate_yaml(config, yaml_path)
-            st.success(f"YAML file saved at: {yaml_path}")
+            st.success(f"YAML file saved at: ./{yaml_path}")
         except Exception as e:
             st.error(f"Error occurred when generating YAML config file: {e}")
 
